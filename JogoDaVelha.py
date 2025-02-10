@@ -34,8 +34,76 @@ class Game:
         self.current_player = int(not bool(self.current_player))
 
     def check_winner(self):
-        pass
+        winner = -1
+        def check_rows():
+            prev_value: int = 2
 
+            for row in self.board:
+                for value in row:
+                    if prev_value == 2:
+                        prev_value = value
+                        continue
+
+                    if value != prev_value:
+                        return (False, value)
+            
+                return (True, prev_value)
+
+        def check_columns():
+            prev_value: int = 2
+
+            for column in range(len(self.board[0])):
+                for row in range(len(self.board)):
+                    value = self.board[row][column]
+
+                    if prev_value == 2:
+                        prev_value = value
+                        continue
+
+                    if value != prev_value:
+                        return (False, value)
+            
+                return (True, prev_value)
+
+        def check_diagonals():
+            diagonals = [
+                [(0, 0), (1, 1), (2, 2)],
+                [(2, 0), (1, 1), (0, 2)]
+            ]
+
+            for row in diagonals:
+                prev_value = self.board[row[0][0]][row[0][1]]
+
+                skip_row = False
+                for pos in row:
+                    if self.board[pos[0]][pos[1]] != prev_value:
+                        skip_row = True
+                
+                if skip_row == False:
+                    return (True, prev_value)
+            
+            return (False, 2)
+            
+        results: tuple
+        for i in range(3):
+            match i:
+                case 0:
+                    results = check_rows()
+
+                case 1:
+                    results = check_columns()
+                
+                case 2:
+                    results = check_diagonals()
+
+            if results[0]:
+                winner = results[1]
+                break
+
+        if winner != -1:
+            print(f"Player {winner + 1} Won!")
+            self.finished = True
+            self.winner = winner
 
     def decode_pos(pos: str) -> tuple:
         valid_positions: list = [
