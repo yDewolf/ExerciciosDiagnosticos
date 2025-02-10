@@ -84,8 +84,16 @@ class Game:
             
             return (False, 2)
             
+        def check_tie():
+            for x in self.board:
+                for y in x:
+                    if y == -1:
+                        return False
+            
+            return True
+
         results: tuple
-        for i in range(3):
+        for i in range(4):
             match i:
                 case 0:
                     results = check_rows()
@@ -96,14 +104,23 @@ class Game:
                 case 2:
                     results = check_diagonals()
 
+                case 3:
+                    if check_tie():
+                        winner = 2 # Tie
+
             if results[0]:
                 winner = results[1]
                 break
 
         if winner != -1:
-            print(f"Player {winner + 1} Won!")
+            if winner != 2:
+                print(f"Player {winner + 1} Won!")
+            else:
+                print(f"That's a Tie!")
+
             self.finished = True
             self.winner = winner
+
 
     def decode_pos(pos: str) -> tuple:
         valid_positions: list = [
@@ -153,6 +170,16 @@ class Game:
         
         print(board_str)
 
+scoreboard: list[int] = [0, 0]
 
-jogo = Game()
-jogo.start()
+while True:
+    jogo = Game()
+    jogo.start()
+    if jogo.winner < 2:
+        scoreboard[jogo.winner] += 1
+        
+    print(f"Current Scoreboard: {scoreboard[0]} x {scoreboard[1]}")
+
+    play_again: bool = bool(int(input("Play Again? (1 -> Yes; 0 -> No): ")))
+    if not play_again:
+        break
